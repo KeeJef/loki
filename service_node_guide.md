@@ -27,12 +27,11 @@ unless there is less than 25% remaining to be filled.
 The service node operator should specify any addresses that are supposed to
 participate in this service node in order to reserve their place.
 
-To use this guide you will need to use the Loki CLI wallet, to access the CLI wallet open a terminal/command prompt window and use the CD (Change directory) command to navigate to the folder you downloaded your CLI wallet to.
+To use this guide you will need to use the Loki CLI wallet. To access the CLI wallet, open a terminal/command prompt window and use the CD (Change directory) command to navigate to the folder you downloaded your CLI wallet to.
 
-If you are reading this guide while Service Nodes are being tested on testnet you will need to **add the --testnet flag to your daemon** and wallet on startup. 
+If you are reading this guide while Service Nodes are being tested on testnet, you will need to **add the --testnet flag to your daemon and wallet on startup.**
 
-the Daemon and wallet can be started by using the command in terminal ./lokid (Daemon) and ./loki-cli-wallet (Wallet)
-if you are using windows you can omit the ./
+the Daemon and wallet can be started by using the command in terminal ./lokid (Daemon) and ./loki-cli-wallet (Wallet) if you are using Windows you can omit the ./
 
 ## Basic syntax
 
@@ -51,8 +50,7 @@ To do a basic registration of a single contributor (you), you would run this:
 
     ./lokid --prepare-registration 0 L7q6DxQGnP6P... 1 35000.0
 
-This means the given address will receive 100% of the rewards, and the wallet will send 35000.0 to that address in a locked transfer.
-Note that in testnet the stake amount is statically set at **100 Loki** and the registration period is 2 days 
+This means the given address will receive 100% of the rewards, and the wallet will send 35000.0 to that address in a locked transfer. Note that in testnet, the stake amount is statically set at 100 Loki and the registration period is 2 days.
 
 This will generate a signed command that is valid for two weeks to run in the CLI wallet:
 
@@ -90,7 +88,7 @@ Where `<pubkey>` is the public key for the service node and `<amount>` is the am
 
 ### Operator costs
 
-Optionally, the registration can include a portion of the payout to the service node operator, irrespective of relative contributions. For this change the first argument after --prepare-registration to the cut reserved for the service node operator costs.
+Optionally, the registration can include a portion of the payout to the service node operator, irrespective of relative contributions. For this, change the first argument after --prepare-registration to the cut reserved for the service node operator costs.
 
 e.g. to reserve 30% to the operator, and split the remaining parts equally between two contributors, you use this command:
 
