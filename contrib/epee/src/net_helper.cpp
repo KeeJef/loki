@@ -14,7 +14,15 @@ namespace net_utils
 		boost::asio::ip::tcp::resolver::iterator iterator = resolver.resolve(query);
 		boost::asio::ip::tcp::resolver::iterator end;
 		if(iterator == end) // Documentation states that successful call is guaranteed to be non-empty
-			throw boost::system::system_error{boost::asio::error::fault, "Failed to resolve " + addr};
+		{
+			// if IPv4 resolution fails, try IPv6.  Unintentional outgoing IPv6 connections should only
+			// be possible if for some reason a hostname was given and that hostname fails IPv4 resolution,
+			// so at least for now there should not be a need for a flag "using ipv6 is ok"
+			boost::asio::ip::tcp::resolver::query query6(boost::asio::ip::tcp::v6(), addr, port, boost::asio::ip::tcp::resolver::query::canonical_name);
+			iterator = resolver.resolve(query6);
+			if (iterator == end)
+				throw boost::system::system_error{boost::asio::error::fault, "Failed to resolve " + addr};
+		}
 
 		//////////////////////////////////////////////////////////////////////////
 

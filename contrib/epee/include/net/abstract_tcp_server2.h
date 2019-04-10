@@ -228,8 +228,18 @@ namespace net_utils
     std::map<std::string, t_connection_type> server_type_map;
     void create_server_type_map();
 
-    bool init_server(uint32_t port, const std::string address = "0.0.0.0", epee::net_utils::ssl_support_t ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_autodetect, const std::pair<std::string, std::string> &private_key_and_certificate_path = std::make_pair(std::string(), std::string()), const std::list<std::string> &allowed_certificates = {}, const std::vector<std::vector<uint8_t>> &allowed_fingerprints = {}, bool allow_any_cert = false);
-    bool init_server(const std::string port,  const std::string& address = "0.0.0.0", epee::net_utils::ssl_support_t ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_autodetect, const std::pair<std::string, std::string> &private_key_and_certificate_path = std::make_pair(std::string(), std::string()), const std::list<std::string> &allowed_certificates = {}, const std::vector<std::vector<uint8_t>> &allowed_fingerprints = {}, bool allow_any_cert = false);
+    bool init_server(uint32_t port, const std::string& address = "0.0.0.0",
+	uint32_t port_ipv6 = 0, const std::string& address_ipv6 = "::", bool use_ipv6 = false, bool require_ipv4 = true,
+	epee::net_utils::ssl_support_t ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_autodetect,
+	const std::pair<std::string, std::string> &private_key_and_certificate_path = std::make_pair(std::string(), std::string()),
+	const std::list<std::string> &allowed_certificates = {},
+	const std::vector<std::vector<uint8_t>> &allowed_fingerprints = {}, bool allow_any_cert = false);
+    bool init_server(const std::string port,  const std::string& address = "0.0.0.0",
+	const std::string port_ipv6 = "", const std::string address_ipv6 = "::", bool use_ipv6 = false, bool require_ipv4 = true,
+	epee::net_utils::ssl_support_t ssl_support = epee::net_utils::ssl_support_t::e_ssl_support_autodetect,
+	const std::pair<std::string, std::string> &private_key_and_certificate_path = std::make_pair(std::string(), std::string()),
+	const std::list<std::string> &allowed_certificates = {},
+	const std::vector<std::vector<uint8_t>> &allowed_fingerprints = {}, bool allow_any_cert = false);
 
     /// Run the server's io_service loop.
     bool run_server(size_t threads_count, bool wait = true, const boost::thread::attributes& attrs = boost::thread::attributes());
@@ -270,6 +280,7 @@ namespace net_utils
     }
 
     int get_binded_port(){return m_port;}
+    int get_binded_port_ipv6(){return m_port_ipv6;}
 
     long get_connections_count() const
     {
@@ -340,7 +351,9 @@ namespace net_utils
     /// Run the server's io_service loop.
     bool worker_thread();
     /// Handle completion of an asynchronous accept operation.
-    void handle_accept(const boost::system::error_code& e);
+    void handle_accept_ipv4(const boost::system::error_code& e);
+    void handle_accept_ipv6(const boost::system::error_code& e);
+    void handle_accept(const boost::system::error_code& e, bool ipv6 = false);
 
     bool is_thread_worker();
 
@@ -361,11 +374,16 @@ namespace net_utils
 
     /// Acceptor used to listen for incoming connections.
     boost::asio::ip::tcp::acceptor acceptor_;
+    boost::asio::ip::tcp::acceptor acceptor_ipv6;
     epee::net_utils::network_address default_remote;
 
     std::atomic<bool> m_stop_signal_sent;
     uint32_t m_port;
+    uint32_t m_port_ipv6;
     std::string m_address;
+    std::string m_address_ipv6;
+    bool m_use_ipv6;
+    bool m_require_ipv4;
     std::string m_thread_name_prefix; //TODO: change to enum server_type, now used
     size_t m_threads_count;
     std::vector<boost::shared_ptr<boost::thread> > m_threads;
@@ -377,6 +395,8 @@ namespace net_utils
 
     /// The next connection to be accepted
     connection_ptr new_connection_;
+    connection_ptr new_connection_ipv6;
+
 
     boost::mutex connections_mutex;
     std::set<connection_ptr> connections_;

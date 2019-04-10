@@ -27,10 +27,27 @@
 
 #pragma once
 
+#include <string>
+
 namespace epee
 {
   namespace net_utils
   {
+
+    inline
+    bool is_ipv6_local(const std::string& ip)
+    {
+      // ipv6 local addresses start with fc00/7 -- (fcXX or fdXX)
+      return (ip.find("fc") == 0 || ip.find("FC") == 0 || ip.find("fd") == 0 || ip.find("FD") == 0);
+    }
+
+    inline
+    bool is_ipv6_loopback(const std::string& ip)
+    {
+      // ipv6 loopback is ::1
+      return (ip == "::1");
+    }
+
     inline
     bool is_ip_local(uint32_t ip)
     {
